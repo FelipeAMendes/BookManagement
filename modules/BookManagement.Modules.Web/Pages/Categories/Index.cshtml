@@ -1,0 +1,72 @@
+﻿@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Categories List";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h1>@ViewData["Title"]</h1>
+        <div class="row">
+            <div class="col-6">
+                <form method="get" name="filterForm">
+                    <input class="form-control" asp-for="Name" placeholder="Search by category name" />
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">
+                        Name
+                    </th>
+                    <th scope="col">
+                        Description
+                    </th>
+                    <th scope="col">
+                        Parent Category
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Categories.Items)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ParentCategoryNames)
+                        </td>
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a asp-page="./Details" asp-route-id="@item.Id" class="btn btn-info" data-bs-toggle="tooltip" data-bs-title="Details">
+                                <i class="fa-solid fa-search"></i>
+                            </a>
+                            <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="Delete">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="card-footer">
+            <vc:pagination paginated-values="Model.Categories.ToObjectQueryResult()" route-data="Model.LinkData"></vc:pagination>
+
+            <div class="col-12">
+                <a class="btn btn-outline-info float-end" asp-page="Create">Create New</a>
+            </div>
+        </div>
+    </div>
+</div>

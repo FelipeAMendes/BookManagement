@@ -1,0 +1,92 @@
+﻿@using BookManagement.Modules.Web.Models
+@model PaginationModel
+
+<div class="d-flex justify-content-center">
+    <nav aria-label="Pagination">
+        <ul class="pagination pg-blue">
+            @{
+                var currentPage = Model.List.CurrentPage;
+                var hasPrevious = Model.List.HasPrevious;
+                var hasNext = Model.List.HasNext;
+                var totalPages = Model.List.Pages;
+                var firstLastPage = Model.List.Pages > Model.LimitPaginationLinks;
+
+                var (startPagination, endPagination) = CreateRangePagination();
+            }
+
+            @if (firstLastPage && hasPrevious)
+            {
+                <li class="page-item ">
+                    <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-p="1" tabindex="-1" title="first">
+                        <span>&laquo;</span>
+                    </a>
+                </li>
+            }
+
+            @if (hasPrevious)
+            {
+                <li class="page-item ">
+                    <a class="page-link" asp-all-route-data="Model.RouteData" asp-route-p="@(currentPage - 1)" tabindex="-1" title="previous">
+                        <span>&lt;</span>
+                    </a>
+                </li>
+            }
+
+            @for (var i = startPagination; i <= endPagination; i++)
+            {
+                if (i <= totalPages)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a asp-all-route-data="@Model.RouteData" asp-route-p="@i" class="page-link">@i</a>
+                    </li>
+                }
+            }
+
+            @if (hasNext)
+            {
+                <li class="page-item ">
+                    <a class="page-link" title="next" asp-all-route-data="Model.RouteData" asp-route-p="@(currentPage + 1)">
+                        <span>&gt;</span>
+                    </a>
+                </li>
+            }
+
+            @if (firstLastPage && hasNext)
+            {
+                <li class="page-item ">
+                    <a class="page-link" title="last" asp-all-route-data="Model.RouteData" asp-route-p="@(Model.List.Pages)">
+                        <span>&raquo;</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+@{
+    Tuple<int, int> CreateRangePagination()
+    {
+        // default behaviour or first item
+        if (currentPage < Model.LimitPaginationLinks)
+        {
+            return Tuple.Create(1, Model.LimitPaginationLinks);
+        }
+        // last item
+        if (currentPage == totalPages)
+        {
+            return Tuple.Create(totalPages - Model.LimitPaginationLinks, totalPages);
+        }
+        // currentPage = LimitPaginationLinks
+        if (currentPage == Model.LimitPaginationLinks && Model.List.HasNext)
+        {
+            return Tuple.Create(2, currentPage + 1);
+        }
+        // move forward, one by one
+        if (currentPage > Model.LimitPaginationLinks && Model.List.HasNext)
+        {
+            return Tuple.Create(currentPage - Model.LimitPaginationLinks + 1, currentPage + 1);
+        }
+
+        return Tuple.Create(1, totalPages);
+    }
+}
